@@ -1,0 +1,74 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+typedef enum  {KOLINEARNE,NEGATIVNA_ORJ,POZITIVNA_ORJ} orij;
+typedef struct{
+    int x;
+    int y;
+} Tacka;
+int max(int x, int y){
+    if(x>y)
+        return x;
+    return y;
+}
+int min(int x, int y){
+    if(x<y)
+        return x;
+    return y;
+}
+orij orijentacija(Tacka A, Tacka B, Tacka C){
+    int d = (B.x-A.x)*(C.y-A.y) - (C.x-A.x)*(B.y-A.y);
+    if (d == 0)
+        return KOLINEARNE;
+    else
+        if (d > 0)
+            return POZITIVNA_ORJ;
+        else
+            return NEGATIVNA_ORJ;
+}
+
+int pripadaDuzi(Tacka P, Tacka Q, Tacka R){
+    if (Q.x <= max(P.x, R.x) && Q.x >= min(P.x, R.x) &&
+        Q.y <= max(P.y, R.y) && Q.y >= min(P.y, R.y))
+            return 1;
+    return 0;
+}
+
+
+int sekuSe(Tacka P1, Tacka Q1, Tacka P2, Tacka Q2){
+// racunamo vrednosti cetiri orijentacije
+// koje su nam potrebne
+    orij o1 = orijentacija(P1, Q1, P2);
+    orij o2 = orijentacija(P1, Q1, Q2);
+    orij o3 = orijentacija(P2, Q2, P1);
+    orij o4 = orijentacija(P2, Q2, Q1);
+    // prvi slucaj
+    if (o1 != o2 && o3 != o4)
+        return 1;
+    // drugi slucaj
+    // P1, Q1 i P2 su kolinearne i P2 pripada duzi P1Q1
+    if (o1 == KOLINEARNE && pripadaDuzi(P1, P2, Q1))
+        return 1;
+    // P1, Q1 i Q2 su kolinearne i Q2 pripada duzi P1Q1
+    if (o2 == KOLINEARNE && pripadaDuzi(P1, Q2, Q1))
+        return 1;
+    // P2, Q2 i P1 su kolinearne i P1 pripada duzi P2Q2
+    if (o3 == KOLINEARNE && pripadaDuzi(P2, P1, Q2))
+        return 1;
+    // P2, Q2 i P1 su kolinearne i Q1 pripada duzi P2Q2
+    if (o4 == KOLINEARNE && pripadaDuzi(P2, Q1, Q2))
+        return 1;
+    // inace se duzi ne seku
+    return 0;
+}
+
+int main() {
+    //Tacka A={2,2}, B={6,4}, C={4,4}, D={6,2};
+    //Tacka A={2,4}, B={6,4}, C={8,4}, D={6,2};
+    Tacka A={1,1}, B={1,4}, C={1,2}, D={1,5};
+    if(sekuSe(A,B,C,D))
+        printf("Seku se");
+    else
+        printf("Ne seku se");
+    return 0;
+}
